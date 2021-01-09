@@ -1,17 +1,33 @@
+
 // Define a function that will create metadata for given sample
 function buildMetadata(sample) {
+    // Read the json data\
+    d3.json("data/samples.json").then(function(data) {
+        var metadata = data.metadata;
+        var sampleMetadata = metadata.filter(d => parseInt(d.id) === parseInt(sample));
+        console.log(sampleMetadata);
+        
+        var demographics = d3.select("#sample-metadata")
+            .selectAll("li")
+            .data(Object.entries(sampleMetadata[0]));
 
-    // Read the json data
-    d3.json("data/samples.json").then(function(d) {
-        // Parse and filter the data to get the sample's metadata
-        var metadata = d.metadata[0];
-        console.log(metadata);
-        // Specify the location of the metadata and update it
+        demographics.enter()
+            .append("li")
+            .merge(demographics)
+            .text((d,i) => `${d[0]}: ${d[1]}`);
+
+        demographics.exit()
+            .remove();
+
     });
 }
 // Define a function that will create charts for given sample
 function buildCharts(sample) {
-
+    d3.json("data/samples.json").then(function(data) {
+        var dataset = data.samples;
+        var sampleDataset = dataset.filter(d => parseInt(d.id) === parseInt(sample));
+        console.log(sampleDataset);
+    });
     // Read the json data
 
         // Parse and filter the data to get the sample's OTU data
@@ -25,28 +41,36 @@ function buildCharts(sample) {
 
 // Define function that will run on page load
 function init() {
-
     // Read json data
-
+    d3.json("data/samples.json").then(function(data) {
         // Parse and filter data to get sample names
+        var names = data.names;
 
         // Add dropdown option for each sample
+        var dropdownMenu = d3.select("#selDataset");
 
-    // Use first sample to build metadata and initial plots
-
+        dropdownMenu.selectAll("option")
+            .data(names)
+            .enter()
+            .append("option")
+            .attr("value", d => d)
+            .text(d => d);
+        
+        var currentSelection = dropdownMenu.node().value;
+        buildMetadata(currentSelection);
+        buildCharts(currentSelection);
+    });
 }
 
 function optionChanged(newSample){
 
+    console.log(newSample);
     // Update metadata with newly selected sample
-    var dropdownMenu = d3.select("#selDataset");
-    // Assign the value of the dropdown menu option to a variable
-    var dataset = dropdownMenu.property("value");
+    buildMetadata(newSample);
     // Update charts with newly selected sample
 
 }
 
 // Initialize dashboard on page load
-//init();
+init();
 
-buildMetadata();
