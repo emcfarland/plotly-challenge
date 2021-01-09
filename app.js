@@ -5,7 +5,7 @@ function buildMetadata(sample) {
     d3.json("data/samples.json").then(function(data) {
         var metadata = data.metadata;
         var sampleMetadata = metadata.filter(d => parseInt(d.id) === parseInt(sample));
-        console.log(sampleMetadata);
+        // console.log(sampleMetadata);
         
         var demographics = d3.select("#sample-metadata")
             .selectAll("li")
@@ -26,7 +26,27 @@ function buildCharts(sample) {
     d3.json("data/samples.json").then(function(data) {
         var dataset = data.samples;
         var sampleDataset = dataset.filter(d => parseInt(d.id) === parseInt(sample));
-        console.log(sampleDataset);
+        // console.log(sampleDataset);
+
+        var sampleValues = sampleDataset[0].sample_values;
+        var otuIDs = sampleDataset[0].otu_ids;
+        var otuLabels = sampleDataset[0].otu_labels;
+
+        // Bar
+        var barData = [{
+            type: 'bar',
+            x: sampleValues.slice(0,10),
+            y: otuIDs.slice(0,10),
+            text: otuLabels.slice(0,10),
+            orientation: 'h'
+        }];
+          
+        Plotly.newPlot("bar", barData);
+
+        // Bubble Chart
+        var bubbleData;
+        
+
     });
     // Read the json data
 
@@ -64,7 +84,7 @@ function init() {
 
 function optionChanged(newSample){
 
-    console.log(newSample);
+    // console.log(newSample);
     // Update metadata with newly selected sample
     buildMetadata(newSample);
     // Update charts with newly selected sample
