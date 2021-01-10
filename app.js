@@ -58,14 +58,56 @@ function buildCharts(sample) {
             }
           }];
           
-          var bubbleLayout = {
+        var bubbleLayout = {
             title: 'Belly Button Biodiversity Bubble Chart',
             showlegend: false,
             height: 600,
             width: 1000
+        };
+          
+        Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+
+
+        var washFrequency = data.metadata
+            .filter(d => parseInt(d.id) === parseInt(sample))[0]
+            .wfreq;
+
+        // Gauge
+        var gaugeData = [
+            {
+              type: "indicator",
+              mode: "gauge+number",
+              value: washFrequency,
+              title: { text: "Belly Button Wash Frequency", font: { size: 24 } },
+              gauge: {
+                axis: { range: [null, 9], tickwidth: 1, tickcolor: "darkblue" },
+                bar: { color: "darkblue" },
+                bgcolor: "white",
+                borderwidth: 2,
+                bordercolor: "gray",
+                steps: [
+                  { range: [0, 1], color: "darkred" },
+                  { range: [1, 2], color: "crimson" },
+                  { range: [2, 3], color: "orangered" },
+                  { range: [3, 4], color: "orange" },
+                  { range: [4, 5], color: "gold" },
+                  { range: [5, 6], color: "yellow" },
+                  { range: [6, 7], color: "greenyellow" },
+                  { range: [7, 8], color: "mediumseagreen" },
+                  { range: [8, 9], color: "forestgreen" },
+                ]
+              }
+            }
+          ];
+          
+          var gaugeLayout = {
+            width: 500,
+            height: 400,
+            margin: { t: 25, r: 25, l: 25, b: 25 },
+            font: { color: "darkblue", family: "Arial" }
           };
           
-          Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+          Plotly.newPlot('gauge', gaugeData, gaugeLayout);
         
 
     });
@@ -127,6 +169,17 @@ function optionChanged(newSample){
         };
           
         Plotly.restyle("bar", barUpdate);
+
+        var washFrequency = data.metadata
+            .filter(d => parseInt(d.id) === parseInt(newSample))[0]
+            .wfreq;
+        
+        var gaugeUpdate = {
+            value: [washFrequency]
+        };
+
+        Plotly.restyle("gauge", gaugeUpdate);
+        
     });
 }
 
